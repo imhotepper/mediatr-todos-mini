@@ -60,7 +60,7 @@ app.UseExceptionHandler((errorApp)=>{
             
         context.Response.StatusCode =  500;
         context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new{Erorr="Something went wrong!"});
+        await context.Response.WriteAsJsonAsync(new{Erorr=feat?.Error?.Message ?? "Something went wrong!"});
     });
 });
 
@@ -68,17 +68,17 @@ app.UseExceptionHandler((errorApp)=>{
 
 #region Api mappings
 
-app.MapPost("api/todos-post", async (IMediator mediator,PostTodoCommand todoCommand, CancellationToken cancellationToken) 
-    => Results.Ok(await mediator.Send(todoCommand, cancellationToken)));
 
 app.MapGet("api/todos-get", async (IMediator mediator, CancellationToken cancellationToken) 
     => Results.Ok(await mediator.Send(new GetTodosQuery(), cancellationToken)));
 
-app.MapPost("api/register", async (IMediator mediator,UserRegistrationCommand registerCommand, 
-    CancellationToken cancellationToken) =>{
-    var created = await mediator.Send(registerCommand, cancellationToken);
-    return !created ? Results.NotFound() : Results.Created("",null);
-});
+app.MapPost("api/todos-post", async (IMediator mediator,PostTodoCommand todoCommand, CancellationToken cancellationToken) 
+    => Results.Ok(await mediator.Send(todoCommand, cancellationToken)));
+
+app.MapPost("api/register",
+    async (IMediator mediator, UserRegistrationCommand registerCommand, CancellationToken cancellationToken)
+        => await mediator.Send(registerCommand, cancellationToken) ? 
+            Results.Created("", null) : Results.NotFound());
 
 
 app.Run();

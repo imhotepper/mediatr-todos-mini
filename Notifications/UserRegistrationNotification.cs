@@ -5,7 +5,6 @@ using MediatR;
 
 namespace mediatr_todos_mini.Notifications;
 
-
 public class UserRegistrationNotification: INotification
 {
     public UserRegistrationNotification(string email) => Email = email;
